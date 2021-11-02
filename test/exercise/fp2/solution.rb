@@ -8,8 +8,9 @@ module Exercise
       def my_each
         recursive_yield = lambda { |array|
           unless array.empty?
-            yield array[0]
-            recursive_yield.call array[1..-1]
+            first, *others = array
+            yield first
+            recursive_yield.call others
           end
         }
 
@@ -35,17 +36,20 @@ module Exercise
 
       # Написать свою функцию my_reduce
       def my_reduce(init = nil)
-        acc = init.nil? ? self[0] : init
+        first, *others = self
+
+        acc = init.nil? ? first : init
 
         recursive_yield = lambda { |array|
-          unless array.empty?
-            acc = yield acc, array[0]
-            recursive_yield.call array[1..-1]
-          end
+          return if array.empty?
+
+          ar_first, *ar_others = array
+          acc = yield acc, ar_first
+          recursive_yield.call ar_others
         }
 
         if init.nil?
-          recursive_yield.call self[1..-1]
+          recursive_yield.call others
         else
           recursive_yield.call self
         end
